@@ -19,8 +19,16 @@ def parse_product(product_url)
   end
 end
 
-page = Nokogiri::HTML(open(ALL_INFORMATION))
-product_urls = page.css('.product_img_link').map { |link| link['href'] }
+#binding pry
+first_page = Nokogiri::HTML(open(ALL_INFORMATION))
+pages_count = first_page.css('.heading-counter').last.content.match(/\d+/)[0].to_i / 20 + 1
+product_urls = []
+
+pages_count.times do |page_number|
+
+  page = Nokogiri::HTML(open("#{ALL_INFORMATION}?p=#{page_number + 1}"))
+  product_urls += page.css('.product_img_link').map { |link| link['href'] }
+end
 
 product_lines = product_urls.inject([]) do |product_lines, product_url|
   product_lines + parse_product(product_url)
@@ -32,3 +40,6 @@ CSV.open("tmp/#{END_CSV_FILE}", 'wb') do |csv|
     csv << line
   end
 end
+
+
+
