@@ -1,2 +1,4 @@
 .idea
 .ruby-gemset
+tmp/*
+!tmp/.gitkeep
